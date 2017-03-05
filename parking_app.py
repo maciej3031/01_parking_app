@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 from time import *
 import math
@@ -8,6 +9,7 @@ import sqlite3
 con = sqlite3.connect("base.db")
 con.row_factory = sqlite3.Row
 c = con.cursor()
+
 
 class DataBase():
     """ Klasa skupiajaca funkcje realizujace dzialania na bazie danych  """
@@ -140,7 +142,9 @@ class Menu():
                 w = w[0].upper()  # pierwszy znak, duza litera
                 if w in 'WEPSKA':  # jezeli podana przez uzytkownika litera jest poprawna to zwroc ja,
                     return w
-                print("Nieznane polecenie")  # jezeli nie zwroc "nieznane polecenie"
+                else:
+                    print("Nieznane polecenie")  # jezeli nie zwroc "nieznane polecenie"
+                    return
 
 
 class Subscription():
@@ -214,22 +218,21 @@ class Subscription():
     def days_input(self):
         """ metoda rezlizujaca wybor dni przez uzytkownika """
         print("Na jak dlugi czas chcesz wykupic abonament? Podaj liczbe dni. Nie mniej niz 30 dni")
-        self.days = int(input())
-        if self.days >= 30:
-            self.price = self.days * (Stakes.substake / Stakes.subterm)
-            print("Koszt to: %.2f zl za %i dni" % (self.price, self.days))
-            return self.days
-        else:
-            print("Za mala liczba dni!")
+        self.days = input()
+        try:
+            self.days = int(self.days)
+            if self.days >= 30:
+                self.price = self.days * (Stakes.substake / Stakes.subterm)
+                print("Koszt to: %.2f zl za %i dni" % (self.price, self.days))
+                return self.days
+            else:
+                print("Za mala liczba dni!")
+                return False
+        except ValueError:
+            print("Nie podano liczby dni!")
             return False
 
-    def subscription(self):
-        """ metoda glowna wykupienia/przedluzenia abonamentu """
-        if self.front_sub(self.status):     # jezeli metoda front_sub otrzyma status inny niz przewidzane to zakoncz
-            return
-        if not self.decision():     # jezeli metoda decision otrzyma decyzje "Nie" to zakoncz
-            return
-        self.days = self.days_input()
+    def subscription_db_insert(self):
         try:
             # jezeli auto ma wykupiony, wazny abonament to dodaj wykupiona ilosc dni do obecnego terminu waznosci
             if self.status in ["parked_with_sub", "not_parked_with_sub"]:
@@ -250,6 +253,15 @@ class Subscription():
                                                             localtime(mktime(localtime()) + self.days * 24 * 60 * 60)))
         except Exception:
             print("Blad zapisu do bazy danych!")
+
+    def subscription(self):
+        """ metoda glowna wykupienia/przedluzenia abonamentu """
+        if self.front_sub(self.status):     # jezeli metoda front_sub otrzyma status inny niz przewidzane to zakoncz
+            return
+        if not self.decision():     # jezeli metoda decision otrzyma decyzje "Nie" to zakoncz
+            return
+        self.days = self.days_input()
+        self.subscription_db_insert()
 
 
 class Parking():
@@ -365,6 +377,6 @@ if __name__ == "__main__":
     try:
         choice()  # interfejs uzytkownika
     except Exception:
-        print("Wystapil powazny blad!")
+         print("Wystapil powazny blad!")
     c.close()
     con.close()  # zamkniecie bazy
