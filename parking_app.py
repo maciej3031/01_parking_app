@@ -14,7 +14,7 @@ c = con.cursor()
 
 
 class DataBase():
-    """ Klasa skupiajaca funkcje realizujace dzialania na bazie danych  """
+    """ Klasa skupiajaca metody realizujace dzialania na bazie danych  """
 
     @staticmethod
     def create_table():
