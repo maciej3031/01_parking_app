@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class CommonMessage:
     unknown_cmd = "Nieznane polecenie"
     set_reg_number = "Podaj numer rejestracyjny pojazdu: "

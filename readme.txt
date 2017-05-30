@@ -1,4 +1,5 @@
 SIMPLE PARKING APPLICATION
+Python version 3.5.2+
 
 1. Basic information
  Application is developed in Python. Database is created in SQLite. Application language = polish.
